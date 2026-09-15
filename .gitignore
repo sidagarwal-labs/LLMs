@@ -1,0 +1,30 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Datasets, checkpoints, and generated training artifacts
+/data/
+/checkpoints/
+/models/
+/runs/
+/outputs/
+/wandb/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+
+# Operating-system metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
