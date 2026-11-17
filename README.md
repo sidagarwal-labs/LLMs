@@ -12,15 +12,19 @@ This is an educational and experimental project, not a claim of reproducing Chat
 
 The work is organized into three milestones. Each has a pinned tracking issue with "done when" criteria. Start the next milestone only when the current one is done.
 
+**Follow the [guided learning path](docs/learning-path.md)** for ordered sessions, exercises, completion gates, and the next action at each stage. The longer resource list below is a reference, not a requirement to finish every tutorial.
+
 | Milestone | Goal | Roadmap steps | Tracking |
 | --- | --- | --- | --- |
 | 1. Foundations (**current**) | Learn PyTorch and train a tiny GPT from scratch. | 0–2 | [#1](https://github.com/sidagarwal-labs/LLMs/issues/1) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/1) |
-| 2. Hidden-law world | Generate made-up "laws of nature." Test whether writing down the inferred law helps a tiny Transformer more than answering directly or adding recurrent depth. | 5–6 | [#2](https://github.com/sidagarwal-labs/LLMs/issues/2) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/2) |
-| 3. RL environment | Turn the hidden-law world into an environment with a verifiable reward. Compare prompting, supervised fine-tuning (SFT) and group relative policy optimization (GRPO) on a small pretrained model. | 7 | [#3](https://github.com/sidagarwal-labs/LLMs/issues/3) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/3) |
+| 2. Hidden-law world | Test whether writing down an inferred law helps a tiny Transformer more than answering directly. Recurrent depth is optional. | 5; 6 optional | [#2](https://github.com/sidagarwal-labs/LLMs/issues/2) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/2) |
+| 3. RL environment | Compare prompting, supervised fine-tuning (SFT), and SFT followed by group relative policy optimization (GRPO). Then extend to choosing experiments under a fixed budget. | 7 | [#3](https://github.com/sidagarwal-labs/LLMs/issues/3) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/3) |
 
 Roadmap steps 3–4 (a larger language model and a chat model) are optional. Milestones 2–3 only need step 3's checkpoint and resume practice.
 
-**Why invented laws?** A pretrained model has read about real physics, so asking it to predict a real law tests memory as much as discovery. A randomly sampled law cannot have been memorized. Because the generator knows the true answer, every prediction can be checked exactly, without a model-based judge. [NewtonBench](https://arxiv.org/abs/2510.07172) uses altered physical laws for the same reason.
+**Why invented laws?** They let us control the task, define disjoint law/problem splits, and check noiseless answers without a model-based judge. Random generation alone does not prevent memorization: small families repeat, and pretrained models may know the mathematical forms. Report exactly what was held out.
+
+**Is this just guessing a formula?** That is the warm-up. The [complexity ladder](docs/learning-path.md#beyond-guessing-a-formula) leads from scalar rules to multiple inputs, active experiment selection, and eventually predicting a simulated cart's motion under unfamiliar dynamics. [NewtonBench](https://arxiv.org/abs/2510.07172) is relevant prior work on interactive law discovery. Our proposed question is narrower: can training improve useful experiment selection under matched budgets? These extensions are planned, not implemented.
 
 ## Start here: the first learning session
 
@@ -36,7 +40,7 @@ Do not try to finish all the resources below before writing code. Complete one s
 
 ## Roadmap and resources
 
-The order deliberately puts fundamentals before GPT, and a small recurrent-depth experiment before expensive reinforcement learning. [Plan and progress](#plan-and-progress) groups these steps into three milestones.
+The order puts fundamentals before GPT and a controlled answer-only versus explicit-reasoning experiment before reinforcement learning. Recurrent depth is optional. [Plan and progress](#plan-and-progress) groups these steps into three milestones.
 
 | Step | What to learn or build | Starting resources | Evidence of completion |
 | --- | --- | --- | --- |
@@ -52,7 +56,7 @@ The order deliberately puts fundamentals before GPT, and a small recurrent-depth
 ### Two clearly labeled tracks
 
 - **From-scratch track:** implement the model, initialize its weights randomly, and train it yourself. This is the main learning and architecture-research track.
-- **Optional pretrained track:** adapt an existing small model for more useful chat and reasoning. Record the model, revision, license, and fine-tuning method. Do not describe this as pretraining a model from scratch.
+- **Pretrained track (Milestone 3; optional earlier):** adapt an existing small model. Record the model, revision, license, and fine-tuning method. Do not describe this as pretraining a model from scratch.
 
 A tiny story model will not become a broadly knowledgeable assistant just by learning conversation formatting. The two tracks answer different questions and should not be mixed in results tables.
 
@@ -130,13 +134,13 @@ Neither a plausible written explanation nor extra internal iterations proves hum
 
 This is Milestone 2 ([#2](https://github.com/sidagarwal-labs/LLMs/issues/2)). Use generated problems with exact, independently checked answers. Each problem samples a hidden law from a small family, for example `y = a·x^p + b` with small integers, shows several `(x, y)` observations, and asks for `y` at a new `x`.
 
-A model trained from scratch has no outside knowledge, so it must infer the rule from the observations in its context (compare [Garg et al., 2022](https://arxiv.org/abs/2208.01066)). Check that the observations determine the law uniquely within the family. Begin with a trivially easy setting, such as `p = 1` and `b = 0`, as a pipeline check. Harder tests can use unseen parameter values, larger `x`, fewer observations or a held-out law form. Avoid large scraped datasets and paid model-generated training data for this first study.
+A model trained from scratch has no pretrained outside knowledge, but can still memorize training examples or learn shortcuts. Training updates its weights across problems; using observations for a new prediction happens in context without weight updates (compare [Garg et al., 2022](https://arxiv.org/abs/2208.01066)). Check that observations identify the requested answer within the declared family, and a unique canonical law if naming it is part of the target. Begin with `p = 1` and `b = 0` as a pipeline check. Evaluate held-out parameters, input extrapolation, and held-out forms separately. The [stage 2 guide](docs/learning-path.md#stage-2-controlled-research) includes a non-neural solver baseline and leakage checks. Avoid scraped datasets and paid model-generated training data for this first study.
 
 | Variant | Architecture | Training target |
 | --- | --- | --- |
 | A: answer-only baseline | Standard fixed-depth Transformer with distinct block weights. | Final answer only. |
 | B: explicit scratchpad | The same standard architecture as A. | The law and its evaluation steps, produced by the generator, followed by the final answer. |
-| C: recurrent depth | A Transformer with a weight-shared block repeated for a controlled number of iterations. | Final answer only. |
+| C: recurrent depth (optional follow-up) | A Transformer with a weight-shared block repeated for a controlled number of iterations. | Final answer only. |
 
 For C, begin with a small fixed number of iterations. Later, investigate training with variable iteration counts and testing beyond the trained range. More iterations are a hypothesis to test, not a guaranteed improvement.
 
@@ -170,13 +174,13 @@ Do not begin with distributed training, a large chat UI, a complex agent framewo
 
 ### Milestone 3: a hidden-law RL environment
 
-Milestone 3 ([#3](https://github.com/sidagarwal-labs/LLMs/issues/3)) uses the optional pretrained track: it adapts a small open instruction-tuned model rather than the from-scratch model and reports results separately.
+Milestone 3 ([#3](https://github.com/sidagarwal-labs/LLMs/issues/3)) uses the pretrained track: it adapts a small open instruction-tuned model rather than the from-scratch model and reports results separately. Follow the [stage 3 guide](docs/learning-path.md#stage-3-reinforcement-learning) for static training first, then interactive experiment selection.
 
 - **Environment:** the Milestone 2 generator presents observations from a hidden law. Laws can be richer than in Milestone 2, such as a made-up force law `F = c·m1·m2 / d^p` with an unusual exponent. The model states a law and predicts values at held-out query points.
-- **Reward:** computed by the generator's checker from prediction accuracy plus a format check. Before training, unit-test that known-bad outputs receive low reward.
-- **Comparison:** a prompting baseline, SFT on generator-verified solutions, then GRPO with [TRL's GRPOTrainer](https://huggingface.co/docs/trl/main/en/grpo_trainer). Judge success by held-out accuracy, including a law form not used in training, rather than by training reward.
+- **Reward:** computed by an independent checker from prediction accuracy. Invalid output receives zero; formatting alone must not earn positive reward. Before training, test known-bad, malformed, and non-finite outputs.
+- **Comparison:** prompting, SFT on generator-verified training solutions, then GRPO starting from the SFT checkpoint with [TRL's GRPOTrainer](https://huggingface.co/docs/trl/en/grpo_trainer). Compare continued SFT at a similar extra-compute budget before claiming an RL advantage. Judge success by held-out accuracy, with held-out law forms reported separately, rather than by training reward.
 - **Reward-hacking audit:** read samples. Look for parser exploits, degenerate guesses, or reward rising while held-out accuracy does not.
-- **Stretch goal:** let the model choose which experiments to run within a fixed budget before it predicts.
+- **Interactive extension:** let the model choose experiments within a fixed budget before predicting. Compare fixed, random, and candidate-elimination experiment selection with the same tool access and budgets. Multi-turn rollout integration must be tested separately from static GRPO; a dynamical simulator comes later.
 
 The spending policy below still applies: try free Colab or the local GPU first.
 
@@ -199,7 +203,7 @@ Do not buy new hardware until repeated measurements demonstrate a real limitatio
 
 ## Keeping the GitHub project useful
 
-The starter includes this guide, a [starter notebook](notebooks/00_pytorch_basics.ipynb), an [experiment report template](docs/experiment-template.md), a [learning-blocker template](.github/ISSUE_TEMPLATE/learning-blocker.md), and [Git ignore rules](.gitignore). It intentionally has no training framework or dependency lockfile yet. Progress is tracked with [GitHub milestones](https://github.com/sidagarwal-labs/LLMs/milestones) and the pinned issues listed in [Plan and progress](#plan-and-progress).
+The starter includes this overview, the [guided learning path](docs/learning-path.md), a [starter notebook](notebooks/00_pytorch_basics.ipynb), an [experiment report template](docs/experiment-template.md), a [learning-blocker template](.github/ISSUE_TEMPLATE/learning-blocker.md), and [Git ignore rules](.gitignore). It intentionally has no training framework or dependency lockfile yet. Progress is tracked with [GitHub milestones](https://github.com/sidagarwal-labs/LLMs/milestones) and the pinned issues listed in [Plan and progress](#plan-and-progress).
 
 Add structure only as it becomes useful:
 
