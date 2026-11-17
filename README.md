@@ -2,11 +2,25 @@
 
 > **Research goal: Explicit versus latent reasoning in small Transformers under constrained compute.**
 
-A learning-in-public project: understand PyTorch, build a small GPT from scratch, add chat and reasoning capabilities, and investigate when written reasoning steps or additional internal computation help.
+A learning-in-public project: understand PyTorch, build a small GPT from scratch, investigate when written reasoning steps or additional internal computation help, and finish with a small reinforcement-learning (RL) environment.
 
-**Starting point:** some Python experience, no PyTorch experience, and a limited personal compute budget. **Current status:** project setup; no trained models or benchmark results yet.
+**Starting point:** some Python experience, no PyTorch experience, and a limited personal compute budget. **Current status:** Milestone 1 started; no trained models or benchmark results yet. See [Plan and progress](#plan-and-progress).
 
 This is an educational and experimental project, not a claim of reproducing ChatGPT-level capability.
+
+## Plan and progress
+
+The work is organized into three milestones. Each has a pinned tracking issue with "done when" criteria. Start the next milestone only when the current one is done.
+
+| Milestone | Goal | Roadmap steps | Tracking |
+| --- | --- | --- | --- |
+| 1. Foundations (**current**) | Learn PyTorch and train a tiny GPT from scratch. | 0–2 | [#1](https://github.com/sidagarwal-labs/LLMs/issues/1) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/1) |
+| 2. Hidden-law world | Generate made-up "laws of nature." Test whether writing down the inferred law helps a tiny Transformer more than answering directly or adding recurrent depth. | 5–6 | [#2](https://github.com/sidagarwal-labs/LLMs/issues/2) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/2) |
+| 3. RL environment | Turn the hidden-law world into an environment with a verifiable reward. Compare prompting, supervised fine-tuning (SFT) and group relative policy optimization (GRPO) on a small pretrained model. | 7 | [#3](https://github.com/sidagarwal-labs/LLMs/issues/3) · [milestone](https://github.com/sidagarwal-labs/LLMs/milestone/3) |
+
+Roadmap steps 3–4 (a larger language model and a chat model) are optional. Milestones 2–3 only need step 3's checkpoint and resume practice.
+
+**Why invented laws?** A pretrained model has read about real physics, so asking it to predict a real law tests memory as much as discovery. A randomly sampled law cannot have been memorized. Because the generator knows the true answer, every prediction can be checked exactly, without a model-based judge. [NewtonBench](https://arxiv.org/abs/2510.07172) uses altered physical laws for the same reason.
 
 ## Start here: the first learning session
 
@@ -14,7 +28,7 @@ This is an educational and experimental project, not a claim of reproducing Chat
 
 1. Open the official [PyTorch Tensors tutorial](https://docs.pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html) and select **Run in Google Colab**. Start with a CPU runtime; tensor fundamentals do not need a GPU.
 2. Work through the examples actively: predict tensor shapes, change values, and explain the results in your own words.
-3. Create [a new Colab notebook](https://colab.research.google.com/#create=true) named `00_pytorch_basics.ipynb` for your own exercises and notes. Link the tutorial you used.
+3. Open the [starter notebook in Colab](https://colab.research.google.com/github/sidagarwal-labs/LLMs/blob/main/notebooks/00_pytorch_basics.ipynb). It contains exercise prompts only; write the code and notes yourself. Link the tutorial you used. This step is tracked in [#4](https://github.com/sidagarwal-labs/LLMs/issues/4).
 4. Complete the [first-session checklist](#first-session-checklist), then follow [the GitHub saving workflow](#saving-and-reopening-your-work).
 5. When stuck, share the notebook link and a small reproducible example using the [learning-blocker issue template](https://github.com/sidagarwal-labs/LLMs/issues/new?template=learning-blocker.md).
 
@@ -22,7 +36,7 @@ Do not try to finish all the resources below before writing code. Complete one s
 
 ## Roadmap and resources
 
-The order deliberately puts fundamentals before GPT, and a small recurrent-depth experiment before expensive reinforcement learning.
+The order deliberately puts fundamentals before GPT, and a small recurrent-depth experiment before expensive reinforcement learning. [Plan and progress](#plan-and-progress) groups these steps into three milestones.
 
 | Step | What to learn or build | Starting resources | Evidence of completion |
 | --- | --- | --- | --- |
@@ -33,7 +47,7 @@ The order deliberately puts fundamentals before GPT, and a small recurrent-depth
 | 4. Mini chat model | Conversation formatting, user/assistant roles, supervised fine-tuning (SFT), assistant-token loss masking, and generation stopping. | Instruction fine-tuning material in [LLMs from Scratch](https://github.com/rasbt/LLMs-from-scratch). Later, inspect [nanochat](https://github.com/karpathy/nanochat) as an end-to-end reference. | A simple notebook chat loop and a held-out set of narrow instruction-following tasks. Document failures, not just good conversations. |
 | 5. Explicit reasoning | Answer-only versus intermediate-step training, answer verification, and optional inference-time sampling. | [Build a Reasoning Model from Scratch](https://github.com/rasbt/reasoning-from-scratch), which starts from a pretrained model. Apply the concepts to small, generated tasks in the from-scratch track. | A comparison on unseen problems using final-answer accuracy, output length, and latency. Longer explanations alone do not count as progress. |
 | 6. Recurrent-depth reasoning | Share Transformer-block weights across repeated internal updates. Train for the iteration counts being studied before testing depth generalization. | [Universal Transformers](https://arxiv.org/abs/1807.03819); [Scaling up Test-Time Compute with Latent Reasoning](https://arxiv.org/abs/2502.05171); [Huginn research code](https://github.com/seal-rg/recurrent-pretraining). | Accuracy-versus-iterations and accuracy-versus-latency plots, with parameter-matched and compute-matched baselines reported separately. |
-| 7. RL and further experiments | Learn policy-gradient basics, then correctness-reward RL; investigate group-relative policy optimization (GRPO) after the supervised baseline and verifier work. | Reinforcement-learning material in [Reasoning from Scratch](https://github.com/rasbt/reasoning-from-scratch). | A controlled comparison against SFT, including rollout cost, answer accuracy, and checks for reward exploitation. |
+| 7. RL and further experiments | Learn policy-gradient basics, then correctness-reward RL; investigate group-relative policy optimization (GRPO) after the supervised baseline and verifier work. | Reinforcement-learning material in [Reasoning from Scratch](https://github.com/rasbt/reasoning-from-scratch); [TRL's GRPOTrainer](https://huggingface.co/docs/trl/main/en/grpo_trainer) for [Milestone 3](#milestone-3-a-hidden-law-rl-environment). | A controlled comparison against SFT, including rollout cost, answer accuracy, and checks for reward exploitation. |
 
 ### Two clearly labeled tracks
 
@@ -68,13 +82,13 @@ Google's [Colab FAQ](https://research.google.com/colaboratory/faq.html) document
 
 **Saving a notebook is not the same as saving a training checkpoint.** Colab's GitHub action saves that notebook, not the entire runtime filesystem. It is also not continuous, bidirectional Git synchronization.
 
-Once the first notebook exists, its direct Colab link will be:
+The starter notebook's direct Colab link is:
 
 ```text
 https://colab.research.google.com/github/sidagarwal-labs/LLMs/blob/main/notebooks/00_pytorch_basics.ipynb
 ```
 
-That link is a future target, not an existing starter notebook. Model code and completed exercises are intentionally left for the learning milestones.
+It contains prompts and empty cells, not solutions. Model code and completed exercises are intentionally left for the learning milestones.
 
 If the save-to-GitHub option is unavailable, download the notebook through **File > Download > Download .ipynb**, then upload it with GitHub's **Add file > Upload files**. Review outputs before either method.
 
@@ -93,7 +107,7 @@ More detail: Google's [Using Colab with GitHub guide](https://colab.research.goo
 
 Keep this first session small. These are exercises to implement, not a requirement to understand Transformers yet.
 
-- [ ] Create the personal learning notebook and link the tutorial used.
+- [ ] Open the starter notebook and link the tutorial used.
 - [ ] Create a tensor with shape `(2, 3)`; inspect its shape, data type, and device.
 - [ ] Practice indexing, reshaping, and broadcasting. Explain one operation that fails because the shapes do not match.
 - [ ] Multiply a `(2, 3)` matrix by a `(3, 2)` matrix; predict and verify the output shape.
@@ -112,14 +126,16 @@ Here, **explicit reasoning** means generating intermediate solution tokens. **La
 
 Neither a plausible written explanation nor extra internal iterations proves human-like reasoning.
 
-### First controlled experiment
+### First controlled experiment: the hidden-law world
 
-Use generated arithmetic problems with exact, independently checked answers. Start with addition, then consider carry-heavy examples or longer operands. Avoid large scraped datasets and paid model-generated training data for this first study.
+This is Milestone 2 ([#2](https://github.com/sidagarwal-labs/LLMs/issues/2)). Use generated problems with exact, independently checked answers. Each problem samples a hidden law from a small family, for example `y = a·x^p + b` with small integers, shows several `(x, y)` observations, and asks for `y` at a new `x`.
+
+A model trained from scratch has no outside knowledge, so it must infer the rule from the observations in its context (compare [Garg et al., 2022](https://arxiv.org/abs/2208.01066)). Check that the observations determine the law uniquely within the family. Begin with a trivially easy setting, such as `p = 1` and `b = 0`, as a pipeline check. Harder tests can use unseen parameter values, larger `x`, fewer observations or a held-out law form. Avoid large scraped datasets and paid model-generated training data for this first study.
 
 | Variant | Architecture | Training target |
 | --- | --- | --- |
 | A: answer-only baseline | Standard fixed-depth Transformer with distinct block weights. | Final answer only. |
-| B: explicit scratchpad | The same standard architecture as A. | Valid intermediate steps followed by the final answer. |
+| B: explicit scratchpad | The same standard architecture as A. | The law and its evaluation steps, produced by the generator, followed by the final answer. |
 | C: recurrent depth | A Transformer with a weight-shared block repeated for a controlled number of iterations. | Final answer only. |
 
 For C, begin with a small fixed number of iterations. Later, investigate training with variable iteration counts and testing beyond the trained range. More iterations are a hypothesis to test, not a guaranteed improvement.
@@ -152,6 +168,18 @@ Change one factor at a time:
 
 Do not begin with distributed training, a large chat UI, a complex agent framework, or a full RL stack. Those add moving parts without answering the first research question.
 
+### Milestone 3: a hidden-law RL environment
+
+Milestone 3 ([#3](https://github.com/sidagarwal-labs/LLMs/issues/3)) uses the optional pretrained track: it adapts a small open instruction-tuned model rather than the from-scratch model and reports results separately.
+
+- **Environment:** the Milestone 2 generator presents observations from a hidden law. Laws can be richer than in Milestone 2, such as a made-up force law `F = c·m1·m2 / d^p` with an unusual exponent. The model states a law and predicts values at held-out query points.
+- **Reward:** computed by the generator's checker from prediction accuracy plus a format check. Before training, unit-test that known-bad outputs receive low reward.
+- **Comparison:** a prompting baseline, SFT on generator-verified solutions, then GRPO with [TRL's GRPOTrainer](https://huggingface.co/docs/trl/main/en/grpo_trainer). Judge success by held-out accuracy, including a law form not used in training, rather than by training reward.
+- **Reward-hacking audit:** read samples. Look for parser exploits, degenerate guesses, or reward rising while held-out accuracy does not.
+- **Stretch goal:** let the model choose which experiments to run within a fixed budget before it predicts.
+
+The spending policy below still applies: try free Colab or the local GPU first.
+
 ## Compute and spending policy
 
 **Initial paid-compute budget: $0.** Start with free Colab and existing hardware; no paid API is required.
@@ -171,7 +199,7 @@ Do not buy new hardware until repeated measurements demonstrate a real limitatio
 
 ## Keeping the GitHub project useful
 
-The starter includes this guide, an [experiment report template](docs/experiment-template.md), a [learning-blocker template](.github/ISSUE_TEMPLATE/learning-blocker.md), and [Git ignore rules](.gitignore). It intentionally has no training framework or dependency lockfile yet.
+The starter includes this guide, a [starter notebook](notebooks/00_pytorch_basics.ipynb), an [experiment report template](docs/experiment-template.md), a [learning-blocker template](.github/ISSUE_TEMPLATE/learning-blocker.md), and [Git ignore rules](.gitignore). It intentionally has no training framework or dependency lockfile yet. Progress is tracked with [GitHub milestones](https://github.com/sidagarwal-labs/LLMs/milestones) and the pinned issues listed in [Plan and progress](#plan-and-progress).
 
 Add structure only as it becomes useful:
 
