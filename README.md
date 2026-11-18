@@ -32,7 +32,7 @@ Roadmap steps 3–4 (a larger language model and a chat model) are optional. Mil
 
 1. Open the official [PyTorch Tensors tutorial](https://docs.pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html) and select **Run in Google Colab**. Start with a CPU runtime; tensor fundamentals do not need a GPU.
 2. Work through the examples actively: predict tensor shapes, change values, and explain the results in your own words.
-3. Open the [starter notebook in Colab](https://colab.research.google.com/github/sidagarwal-labs/LLMs/blob/main/notebooks/00_pytorch_basics.ipynb). It contains exercise prompts only; write the code and notes yourself. Link the tutorial you used. This step is tracked in [#4](https://github.com/sidagarwal-labs/LLMs/issues/4).
+3. Open the [PyTorch basics notebook in Colab](https://colab.research.google.com/github/sidagarwal-labs/LLMs/blob/main/notebooks/00_pytorch_basics.ipynb). It contains worked exercises; try the prompts yourself before reading the solutions. Link the tutorial you used. This step is tracked in [#4](https://github.com/sidagarwal-labs/LLMs/issues/4).
 4. Complete the [first-session checklist](#first-session-checklist), then follow [the GitHub saving workflow](#saving-and-reopening-your-work).
 5. When stuck, share the notebook link and a small reproducible example using the [learning-blocker issue template](https://github.com/sidagarwal-labs/LLMs/issues/new?template=learning-blocker.md).
 
